@@ -1,8 +1,11 @@
+import Image from "next/image";
+import orditLogo from "@/public/logo.png";
+
 export function OrditLogo() {
   return (
     <div className="flex items-center justify-center">
-      <div className="w-16 h-16 bg-amber-100 rounded-lg flex items-center justify-center">
-        <span className="text-sm font-semibold text-amber-900">ORDIT</span>
+      <div className="w-full h-full flex items-center justify-center">
+        <Image src={orditLogo} alt="Ordit Logo" width={200} height={200} />
       </div>
     </div>
   )

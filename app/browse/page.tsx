@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, SlidersHorizontal, Plus } from 'lucide-react'
+import { Search, SlidersHorizontal, Plus, Grid3x3, UtensilsCrossed, Leaf, Store } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { BottomNav } from '@/components/bottom-nav'
@@ -12,9 +12,9 @@ export default function BrowsePage() {
   const [searchQuery, setSearchQuery] = useState('')
 
   const categories = [
-    { id: 'all', label: 'All', icon: '⊞' },
-    { id: 'restaurants', label: 'Restaurants', icon: '🏪' },
-    { id: 'services', label: 'Services', icon: '🌿' }
+    { id: 'all', label: 'All', icon: Grid3x3 },
+    { id: 'restaurants', label: 'Restaurants', icon: UtensilsCrossed },
+    { id: 'services', label: 'Services', icon: Leaf }
   ]
 
   const businesses = [
@@ -78,56 +78,71 @@ export default function BrowsePage() {
         </div>
 
         {/* Search Bar */}
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
               placeholder="Search Businesses or Categories"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-background border-border placeholder:text-muted-foreground"
+              className="pl-10 h-12 bg-background border-2 border-border placeholder:text-muted-foreground"
             />
           </div>
-          <Button size="icon" variant="outline" className="border-border">
+          <Button size="icon" variant="outline" className="border-2 border-border w-14 h-12 flex items-center justify-center">
             <SlidersHorizontal className="w-5 h-5 text-foreground" />
           </Button>
         </div>
 
         {/* Category Tabs */}
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`px-4 py-2 rounded-full whitespace-nowrap transition-all ${
-                activeCategory === cat.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground hover:bg-muted/80'
-              }`}
-            >
-              {cat.icon} {cat.label}
-            </button>
-          ))}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {categories.map(cat => {
+            const IconComponent = cat.icon
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`px-4 py-2.5 rounded-full whitespace-nowrap transition-all flex items-center gap-2 ${
+                  activeCategory === cat.id
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'bg-muted text-foreground hover:bg-muted/80'
+                }`}
+              >
+                <IconComponent className="w-4 h-4" />
+                <span>{cat.label}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* Business Cards */}
-      <div className="max-w-md mx-auto px-4 py-6 space-y-4">
+      <div className="max-w-md mx-auto px-4 py-6 space-y-5">
         {filteredBusinesses.map(business => (
-          <div key={business.id} className="border-2 border-border rounded-xl p-4 space-y-3 hover:border-secondary transition-colors">
+          <div key={business.id} className="border-2 border-border rounded-xl p-5 space-y-4 hover:border-primary/50 hover:shadow-lg transition-all bg-card">
             {/* Business Info */}
-            <Link href={`/seller/${business.id}`}>
-              <div>
-                <h3 className="text-lg font-bold text-foreground">{business.name}</h3>
-                <p className="text-sm text-muted-foreground">{business.description}</p>
+            <Link href={`/seller/${business.id}`} className="block group">
+              <div className="flex items-start gap-3">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                  <Store className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{business.name}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{business.description}</p>
+                </div>
               </div>
             </Link>
 
             {/* Products Grid */}
             <div className="grid grid-cols-3 gap-3">
               {business.products.map((product, idx) => (
-                <Link key={idx} href={`/product/${business.id}-${idx + 1}`} className="space-y-2">
-                  <img src={product.image || "/placeholder.svg"} alt={product.name} className="w-full h-20 rounded-lg object-cover bg-muted" />
+                <Link key={idx} href={`/product/${business.id}-${idx + 1}`} className="space-y-2 group">
+                  <div className="relative overflow-hidden rounded-lg bg-muted">
+                    <img 
+                      src={product.image || "/placeholder.svg"} 
+                      alt={product.name} 
+                      className="w-full h-20 object-cover group-hover:scale-105 transition-transform duration-300" 
+                    />
+                  </div>
                   <p className="text-sm font-semibold text-primary">${product.price}</p>
                 </Link>
               ))}

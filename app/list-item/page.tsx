@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronLeft, Upload, Trash2, Plus } from 'lucide-react'
+import { ChevronLeft, Upload, Trash2, Plus, Image, Tag, DollarSign, FileText, Package, ArrowRight, X } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,46 +16,69 @@ export default function ListItemPage() {
   ])
 
   return (
-    <main className="min-h-screen bg-background pb-24">
+    <main className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 pb-24">
       {/* Header */}
-      <div className="sticky top-0 bg-background border-b border-border flex items-center gap-4 px-4 py-4">
-        <Link href="/sell" className="text-foreground hover:text-secondary transition-colors">
-          <ChevronLeft className="w-6 h-6" />
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border flex items-center gap-4 px-4 py-4">
+        <Link href="/sell" className="p-2 hover:bg-muted rounded-lg transition-colors">
+          <ChevronLeft className="w-5 h-5 text-foreground" />
         </Link>
-        <h1 className="text-xl font-bold text-foreground">List Your Item</h1>
+        <div className="flex-1">
+          <h1 className="text-xl font-bold text-foreground">List Your Item</h1>
+          <p className="text-xs text-muted-foreground">Create a new listing</p>
+        </div>
       </div>
 
-      <div className="max-w-md mx-auto px-4 py-6 space-y-8">
+      <div className="max-w-md mx-auto px-4 py-6 space-y-6">
         {/* Product Photos */}
-        <div className="space-y-2">
-          <div className="flex items-baseline gap-1">
-            <h2 className="text-lg font-bold text-foreground">Product Photos</h2>
-            <p className="text-sm text-muted-foreground">Add up to 5 photos</p>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Image className="w-5 h-5 text-primary" />
+            <div>
+              <h2 className="text-base font-bold text-foreground">Product Photos</h2>
+              <p className="text-xs text-muted-foreground">Add up to 5 photos</p>
+            </div>
           </div>
-          <div className="border-2 border-dashed border-muted-foreground rounded-lg p-8 flex flex-col items-center justify-center min-h-48 cursor-pointer hover:border-secondary transition-colors bg-muted/30">
-            <Upload className="w-12 h-12 text-secondary mb-2" />
-            <p className="font-semibold text-foreground text-center">Upload images</p>
-            <p className="text-sm text-muted-foreground text-center mt-1">Tap here to select photos from your gallery</p>
+          <div className="border-2 border-dashed border-border rounded-xl p-8 flex flex-col items-center justify-center min-h-48 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+              <Upload className="w-8 h-8 text-primary" />
+            </div>
+            <p className="font-semibold text-foreground text-center mb-1">Upload images</p>
+            <p className="text-sm text-muted-foreground text-center">Tap here to select photos from your gallery</p>
           </div>
         </div>
 
         {/* Product Name */}
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-foreground">Product Name</label>
-          <Input placeholder="e.g. Handmade Leather Wallet" className="bg-background text-foreground placeholder:text-muted-foreground border-border" />
+          <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <Tag className="w-4 h-4 text-primary" />
+            Product Name
+          </label>
+          <Input 
+            placeholder="Handmade Leather Wallet" 
+            className="h-12 pl-4 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" 
+          />
         </div>
 
         {/* Description */}
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-foreground">Description</label>
-          <Textarea placeholder="Describe your item in detail..." className="bg-background text-foreground placeholder:text-muted-foreground border-border min-h-28" />
+          <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <FileText className="w-4 h-4 text-primary" />
+            Description
+          </label>
+          <Textarea 
+            placeholder="Describe your item in detail..." 
+            className="bg-card text-foreground placeholder:text-muted-foreground border-2 border-border min-h-32 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none" 
+          />
         </div>
 
         {/* Category */}
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-foreground">Category</label>
+          <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <Package className="w-4 h-4 text-primary" />
+            Category
+          </label>
           <Select>
-            <SelectTrigger className="bg-background text-foreground border-border">
+            <SelectTrigger className="w-full bg-card text-foreground border-2 border-border rounded-xl py-5.5 focus:ring-2 focus:ring-primary/20 focus:border-primary">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
@@ -69,25 +92,40 @@ export default function ListItemPage() {
 
         {/* Price */}
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-foreground">Price</label>
+          <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <DollarSign className="w-4 h-4 text-primary" />
+            Price
+          </label>
           <div className="relative">
-            <span className="absolute left-3 top-3 text-foreground">$</span>
-            <Input type="number" placeholder="0.00" className="bg-background text-foreground placeholder:text-muted-foreground border-border pl-6" />
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground font-semibold">$</span>
+            <Input 
+              type="number" 
+              placeholder="0.00" 
+              className="bg-card h-12 text-foreground placeholder:text-muted-foreground border-2 border-border pl-8 rounded-xl py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" 
+            />
           </div>
         </div>
 
         {/* Product Variations */}
         <div className="space-y-4">
-          <div className="flex items-baseline gap-1">
-            <h3 className="text-lg font-bold text-foreground">Product Variations</h3>
-            <p className="text-sm text-muted-foreground">Add options like size, color, etc.</p>
+          <div className="flex items-center gap-2 mb-2">
+            <Package className="w-5 h-5 text-primary" />
+            <div>
+              <h3 className="text-base font-bold text-foreground">Product Variations</h3>
+              <p className="text-xs text-muted-foreground">Add options like size, color, etc.</p>
+            </div>
           </div>
 
           {variations.map((variation) => (
-            <div key={variation.id} className="border border-border rounded-lg p-4 space-y-3">
+            <div key={variation.id} className="border border-border rounded-xl p-4 space-y-3 bg-card hover:shadow-md transition-all">
               <div className="flex items-center justify-between">
-                <p className="font-semibold text-foreground">Variation {variation.id}: {variation.name}</p>
-                <button className="text-destructive hover:text-destructive/80 transition-colors">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Tag className="w-4 h-4 text-primary" />
+                  </div>
+                  <p className="font-semibold text-foreground">Variation {variation.id}: {variation.name}</p>
+                </div>
+                <button className="p-2 hover:bg-destructive/10 rounded-lg text-destructive hover:text-destructive/80 transition-colors">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -95,31 +133,44 @@ export default function ListItemPage() {
               <div className="space-y-2">
                 {variation.options.map((option, idx) => (
                   <div key={idx} className="grid grid-cols-3 gap-2">
-                    <Input placeholder={`e.g. ${option.name}`} className="bg-background text-foreground placeholder:text-muted-foreground border-border" />
-                    <Input placeholder="Price (e.g. +5" className="bg-background text-foreground placeholder:text-muted-foreground border-border" />
-                    <Input placeholder="Quantity" className="bg-background text-foreground placeholder:text-muted-foreground border-border" />
+                    <Input 
+                      placeholder={`e.g. ${option.name}`} 
+                      className="bg-background text-foreground placeholder:text-muted-foreground border-border rounded-lg text-sm" 
+                    />
+                    <Input 
+                      placeholder="Price (+$5)" 
+                      className="bg-background text-foreground placeholder:text-muted-foreground border-border rounded-lg text-sm" 
+                    />
+                    <Input 
+                      placeholder="Qty" 
+                      className="bg-background text-foreground placeholder:text-muted-foreground border-border rounded-lg text-sm" 
+                    />
                   </div>
                 ))}
               </div>
 
-              <button className="w-full border-2 border-dashed border-primary text-primary py-2 rounded-lg font-medium hover:bg-primary/5 transition-colors flex items-center justify-center gap-2">
-                <Plus className="w-4 h-4" />
+              <button className="w-full border-2 border-dashed border-primary text-primary py-2.5 rounded-xl font-medium hover:bg-primary/5 transition-all flex items-center justify-center gap-2 group">
+                <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 Add Option
               </button>
             </div>
           ))}
 
-          <button className="w-full border-2 border-primary text-primary py-3 rounded-lg font-semibold hover:bg-primary/5 transition-colors">
+          <button className="w-full border-2 border-primary text-primary py-3 rounded-xl font-semibold hover:bg-primary/5 transition-all flex items-center justify-center gap-2 group">
+            <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
             Add Another Variation
           </button>
         </div>
 
         {/* List Button */}
-        <Link href="/listing-preview">
-          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 font-semibold rounded-lg">
-            List My Product
-          </Button>
-        </Link>
+        <div className="pt-4">
+          <Link href="/listing-preview">
+            <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group">
+              <span>List My Product</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <BottomNav />
