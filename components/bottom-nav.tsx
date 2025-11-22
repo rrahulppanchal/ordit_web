@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Search, Plus, Mail, User } from 'lucide-react'
+import { Home, Search, Plus, Mail, User, ListOrdered, ChartLine } from 'lucide-react'
 
 export function BottomNav() {
   const pathname = usePathname()
@@ -10,8 +10,8 @@ export function BottomNav() {
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Home' },
     { href: '/browse', icon: Search, label: 'Browse' },
-    { href: '/sell', icon: Plus, label: 'Sell' },
-    { href: '/messages', icon: Mail, label: 'Messages' },
+    { href: '/sell', icon: ChartLine, label: 'Sell' },
+    { href: '/orders', icon: ListOrdered, label: 'Orders' },
     { href: '/profile', icon: User, label: 'Profile' },
   ]
 
@@ -26,7 +26,7 @@ export function BottomNav() {
               href={item.href}
               className={`flex-1 flex flex-col items-center justify-center py-3 transition-colors ${
                 isActive
-                  ? 'text-orange-700 border-t-2 border-orange-700'
+                  ? 'text-orange-700 border-t-0 border-orange-700'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >

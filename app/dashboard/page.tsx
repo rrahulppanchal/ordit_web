@@ -3,6 +3,7 @@
 import { Bell, Search, Crown, ShoppingCart, MessageCircle, Package, Truck, User } from 'lucide-react'
 import Link from 'next/link'
 import { BottomNav } from '@/components/bottom-nav'
+import { PageHeader } from '@/components/page-header'
 
 export default function DashboardPage() {
   const quickActions = [
@@ -85,26 +86,34 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-background pb-24">
-      <div className="max-w-md mx-auto px-4 pt-4">
+      <div className="max-w-md mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border-2 border-primary/20">
-              <User className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-foreground">Welcome, Alex!</h1>
-              <p className="text-xs text-muted-foreground">Ready to explore?</p>
-            </div>
-          </div>
-          <Link href="/notifications" className="p-2.5 hover:bg-muted rounded-full transition-colors relative">
-            <Bell size={22} className="text-muted-foreground" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full"></span>
-          </Link>
-        </div>
+        <PageHeader
+          avatar={{
+            type: 'icon',
+            icon: User
+          }}
+          title="Welcome, Alex!"
+          subtitle="Ready to explore?"
+          rightActions={[
+            {
+              type: 'notification',
+              icon: Bell,
+              href: '/notifications',
+              badge: true
+            },
+            {
+              type: 'profile',
+              icon: User,
+              href: '/profile',
+            }
+          ]}
+        />
+        
+        <div className="px-4 pt-4">
 
         {/* Search Bar */}
-        <div className="mb-8">
+        <div className="mb-8 sticky top-0 z-20 bg-background/95 backdrop-blur-sm pt-4 pb-4">
           <div className="relative">
             <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -232,6 +241,7 @@ export default function DashboardPage() {
               </Link>
             ))}
           </div>
+        </div>
         </div>
       </div>
 

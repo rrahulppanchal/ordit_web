@@ -1,11 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, SlidersHorizontal, Plus, Grid3x3, UtensilsCrossed, Leaf, Store } from 'lucide-react'
+import { Search, SlidersHorizontal, Plus, Grid3x3, UtensilsCrossed, Leaf, Store, Bell } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { BottomNav } from '@/components/bottom-nav'
 import Link from 'next/link'
+import { PageHeader } from '@/components/page-header'
+import { User } from 'lucide-react'
 
 export default function BrowsePage() {
   const [activeCategory, setActiveCategory] = useState('all')
@@ -62,56 +64,74 @@ export default function BrowsePage() {
     }
   ]
 
-  const filteredBusinesses = businesses.filter(b => 
+  const filteredBusinesses = businesses.filter(b =>
     activeCategory === 'all' || b.category === activeCategory
   )
 
   return (
     <main className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-4 space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">Discover Local Businesses</h1>
-          <Link href="/profile" className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-            <img src="/user-profile-avatar.png" alt="Profile" className="w-full h-full rounded-full object-cover" />
-          </Link>
-        </div>
+      <PageHeader
+        avatar={{
+          type: 'icon',
+          icon: Search
+        }}
+        title="Browse"
+        subtitle="Discover Local Businesses"
+        rightActions={[
+          {
+            type: 'notification',
+            icon: Bell,
+            href: '/notifications',
+            badge: true
+          },
+          {
+            type: 'profile',
+            icon: User,
+            href: '/profile',
+          }
+        ]}
+      />
+      <div className="sticky top-0 z-10 bg-background border-b border-border">
+        <div className="px-4 pt-4"></div>
 
-        {/* Search Bar */}
-        <div className="flex items-center gap-2">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input
-              placeholder="Search Businesses or Categories"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-12 bg-background border-2 border-border placeholder:text-muted-foreground"
-            />
+        <div className="px-4 pb-4 space-y-4">
+
+          {/* Search Bar */}
+          <div className="flex items-center gap-2">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Input
+                placeholder="Search Businesses or Categories"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-12 bg-background border-2 border-border placeholder:text-muted-foreground"
+              />
+            </div>
+            <Button size="icon" variant="outline" className="border-2 border-border w-14 h-12 flex items-center justify-center">
+              <SlidersHorizontal className="w-5 h-5 text-foreground" />
+            </Button>
           </div>
-          <Button size="icon" variant="outline" className="border-2 border-border w-14 h-12 flex items-center justify-center">
-            <SlidersHorizontal className="w-5 h-5 text-foreground" />
-          </Button>
-        </div>
 
-        {/* Category Tabs */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {categories.map(cat => {
-            const IconComponent = cat.icon
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`px-4 py-2.5 rounded-full whitespace-nowrap transition-all flex items-center gap-2 ${
-                  activeCategory === cat.id
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'bg-muted text-foreground hover:bg-muted/80'
-                }`}
-              >
-                <IconComponent className="w-4 h-4" />
-                <span>{cat.label}</span>
-              </button>
-            )
-          })}
+          {/* Category Tabs */}
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {categories.map(cat => {
+              const IconComponent = cat.icon
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-4 py-2.5 rounded-full whitespace-nowrap transition-all flex items-center gap-2 ${activeCategory === cat.id
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'bg-muted text-foreground hover:bg-muted/80'
+                    }`}
+                >
+                  <IconComponent className="w-4 h-4" />
+                  <span>{cat.label}</span>
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
 
@@ -137,10 +157,10 @@ export default function BrowsePage() {
               {business.products.map((product, idx) => (
                 <Link key={idx} href={`/product/${business.id}-${idx + 1}`} className="space-y-2 group">
                   <div className="relative overflow-hidden rounded-lg bg-muted">
-                    <img 
-                      src={product.image || "/placeholder.svg"} 
-                      alt={product.name} 
-                      className="w-full h-20 object-cover group-hover:scale-105 transition-transform duration-300" 
+                    <img
+                      src={product.image || "/placeholder.svg"}
+                      alt={product.name}
+                      className="w-full h-20 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <p className="text-sm font-semibold text-primary">${product.price}</p>

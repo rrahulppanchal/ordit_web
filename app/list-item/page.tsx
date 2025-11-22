@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BottomNav } from '@/components/bottom-nav'
+import { PageHeader } from '@/components/page-header'
 
 export default function ListItemPage() {
   const [variations, setVariations] = useState([
@@ -18,15 +19,14 @@ export default function ListItemPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border flex items-center gap-4 px-4 py-4">
-        <Link href="/sell" className="p-2 hover:bg-muted rounded-lg transition-colors">
-          <ChevronLeft className="w-5 h-5 text-foreground" />
-        </Link>
-        <div className="flex-1">
-          <h1 className="text-xl font-bold text-foreground">List Your Item</h1>
-          <p className="text-xs text-muted-foreground">Create a new listing</p>
-        </div>
-      </div>
+      <PageHeader
+        backButton={{
+          href: '/sell'
+        }}
+        title="List Your Item"
+        subtitle="Create a new listing"
+        sticky
+      />
 
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
         {/* Product Photos */}

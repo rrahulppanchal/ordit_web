@@ -39,7 +39,7 @@ export default function NotificationSettingsPage() {
           <Link href="/notifications" className="flex items-center">
             <ChevronLeft className="w-6 h-6 text-foreground" />
           </Link>
-          <h1 className="text-2xl font-bold text-foreground">Notification Settings</h1>
+          <h1 className="text-2xl font-bold text-foreground">Account Settings</h1>
         </div>
       </div>
 
