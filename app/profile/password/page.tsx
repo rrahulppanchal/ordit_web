@@ -1,59 +1,66 @@
 'use client'
 
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import { Lock, Eye, EyeOff, Save, Loader2, Shield } from 'lucide-react'
-import Link from 'next/link'
 import { PageHeader } from '@/components/page-header'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { BottomNav } from '@/components/bottom-nav'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string()
+    .min(8, 'Password must be at least 8 characters long')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+})
+
+type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>
 
 export default function ChangePasswordPage() {
-  const [isLoading, setIsLoading] = useState(false)
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
     confirm: false
   })
-  const [formData, setFormData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+
+  const form = useForm<ChangePasswordFormValues>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    },
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
+  const isLoading = form.formState.isSubmitting
 
   const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
     setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (formData.newPassword !== formData.confirmPassword) {
-      alert('New passwords do not match')
-      return
-    }
-
-    if (formData.newPassword.length < 8) {
-      alert('Password must be at least 8 characters long')
-      return
-    }
-
-    setIsLoading(true)
+  const onSubmit = async (data: ChangePasswordFormValues) => {
     // Simulate API call
     setTimeout(() => {
-      setIsLoading(false)
-      console.log('Password changed')
-      // Reset form
-      setFormData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      })
+      console.log('Password changed:', data)
+      form.reset()
     }, 1000)
   }
 
@@ -88,110 +95,127 @@ export default function ChangePasswordPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Current Password */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Lock className="w-4 h-4 text-primary" />
-              Current Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                type={showPasswords.current ? 'text' : 'password'}
-                name="currentPassword"
-                value={formData.currentPassword}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter your current password"
-                className="h-12 pl-12 pr-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility('current')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {showPasswords.current ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            {/* Current Password */}
+            <FormField
+              control={form.control}
+              name="currentPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Lock className="w-4 h-4 text-primary" />
+                    Current Password
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        type={showPasswords.current ? 'text' : 'password'}
+                        placeholder="Enter your current password"
+                        className="h-12 pl-12 pr-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => togglePasswordVisibility('current')}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showPasswords.current ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* New Password */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Lock className="w-4 h-4 text-primary" />
-              New Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                type={showPasswords.new ? 'text' : 'password'}
-                name="newPassword"
-                value={formData.newPassword}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter your new password"
-                className="h-12 pl-12 pr-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility('new')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {showPasswords.new ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
+            {/* New Password */}
+            <FormField
+              control={form.control}
+              name="newPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Lock className="w-4 h-4 text-primary" />
+                    New Password
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        type={showPasswords.new ? 'text' : 'password'}
+                        placeholder="Enter your new password"
+                        className="h-12 pl-12 pr-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => togglePasswordVisibility('new')}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showPasswords.new ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Confirm Password */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Lock className="w-4 h-4 text-primary" />
-              Confirm New Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                type={showPasswords.confirm ? 'text' : 'password'}
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                required
-                placeholder="Confirm your new password"
-                className="h-12 pl-12 pr-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility('confirm')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {showPasswords.confirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-            {formData.newPassword && formData.confirmPassword && formData.newPassword !== formData.confirmPassword && (
-              <p className="text-xs text-destructive">Passwords do not match</p>
-            )}
-          </div>
+            {/* Confirm Password */}
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Lock className="w-4 h-4 text-primary" />
+                    Confirm New Password
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        type={showPasswords.confirm ? 'text' : 'password'}
+                        placeholder="Confirm your new password"
+                        className="h-12 pl-12 pr-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => togglePasswordVisibility('confirm')}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showPasswords.confirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Save Button */}
-          <Button
-            type="submit"
-            disabled={isLoading || !formData.currentPassword || !formData.newPassword || !formData.confirmPassword}
-            className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-primary-foreground py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 font-semibold"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Updating...</span>
-              </>
-            ) : (
-              <>
-                <Save className="w-5 h-5" />
-                <span>Update Password</span>
-              </>
-            )}
-          </Button>
-        </form>
+            {/* Save Button */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-primary-foreground py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 font-semibold"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Updating...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  <span>Update Password</span>
+                </>
+              )}
+            </Button>
+          </form>
+        </Form>
 
         {/* Security Tips */}
         <div className="bg-muted/50 rounded-xl p-4 border border-border">

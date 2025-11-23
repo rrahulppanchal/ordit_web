@@ -1,17 +1,42 @@
 'use client'
 
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import Link from 'next/link'
 import { Shield, Loader2, CheckCircle2, ArrowRight, RotateCcw } from 'lucide-react'
 import { OrditLogo } from '@/components/ordit-logo'
 import { OtpInput } from '@/components/otp-input'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
+
+const verifyOtpSchema = z.object({
+  otpCode: z.string()
+    .length(6, 'OTP code must be exactly 6 digits')
+    .regex(/^[0-9]{6}$/, 'OTP code must contain only numbers'),
+})
+
+type VerifyOtpFormValues = z.infer<typeof verifyOtpSchema>
 
 export default function VerifyOtpPage() {
+  const form = useForm<VerifyOtpFormValues>({
+    resolver: zodResolver(verifyOtpSchema),
+    defaultValues: {
+      otpCode: '',
+    },
+  })
+
   const [isVerifying, setIsVerifying] = useState(false)
-  const [otpCode, setOtpCode] = useState('')
 
   const handleVerify = async (code: string) => {
-    setOtpCode(code)
+    form.setValue('otpCode', code)
     setIsVerifying(true)
     // Simulate API call
     setTimeout(() => {
@@ -22,7 +47,17 @@ export default function VerifyOtpPage() {
 
   const handleResend = () => {
     console.log('Resending OTP...')
-    setOtpCode('')
+    form.setValue('otpCode', '')
+    form.reset()
+  }
+
+  const onSubmit = async (data: VerifyOtpFormValues) => {
+    setIsVerifying(true)
+    // Simulate API call
+    setTimeout(() => {
+      setIsVerifying(false)
+      console.log('Code verified:', data.otpCode)
+    }, 1000)
   }
 
   return (
@@ -44,42 +79,64 @@ export default function VerifyOtpPage() {
         </div>
 
         {/* OTP Input Section */}
-        <div className="mb-8">
-          <OtpInput length={6} onComplete={(code) => {
-            setOtpCode(code)
-            handleVerify(code)
-          }} />
-        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8">
+            <FormField
+              control={form.control}
+              name="otpCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="mb-6">
+                      <OtpInput
+                        length={6}
+                        onComplete={(code) => {
+                          field.onChange(code)
+                          if (code.length === 6) {
+                            form.handleSubmit(onSubmit)()
+                          }
+                        }}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        {/* Verify Button */}
-        <button
-          onClick={() => otpCode && handleVerify(otpCode)}
-          disabled={isVerifying || !otpCode || otpCode.length !== 6}
-          className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed text-primary-foreground font-semibold py-4 px-4 rounded-xl transition-all shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center gap-2 group mb-6"
-        >
-          {isVerifying ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span>Verifying...</span>
-            </>
-          ) : (
-            <>
-              <CheckCircle2 className="w-5 h-5" />
-              <span>Verify</span>
-            </>
-          )}
-        </button>
+            {/* Verify Button */}
+            <Button
+              type="submit"
+              disabled={isVerifying || form.watch('otpCode').length !== 6}
+              className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed text-primary-foreground font-semibold py-4 px-4 rounded-xl transition-all shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center gap-2 group mb-6"
+            >
+              {isVerifying ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Verifying...</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>Verify</span>
+                </>
+              )}
+            </Button>
+          </form>
+        </Form>
 
         {/* Resend OTP */}
         <div className="text-center text-sm text-muted-foreground pt-4">
           Didn't receive the code?{' '}
-          <button
+          <Button
+            type="button"
+            variant="ghost"
             onClick={handleResend}
-            className="text-primary hover:text-primary/90 font-semibold underline-offset-2 hover:underline inline-flex items-center gap-1"
+            className="text-primary hover:text-primary/90 font-semibold underline-offset-2 hover:underline inline-flex items-center gap-1 p-0 h-auto"
           >
             <RotateCcw className="w-4 h-4" />
             Resend OTP
-          </button>
+          </Button>
         </div>
       </div>
     </main>

@@ -65,35 +65,15 @@ export default function ListingPreviewPage() {
           </p>
         </div>
 
-        {/* Variations */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-foreground">Variations</h3>
-
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-foreground">Color</p>
-            <div className="flex gap-2 flex-wrap">
-              <Badge variant="outline">Chestnut Brown</Badge>
-              <Badge variant="outline">Onyx Black</Badge>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-foreground">Size</p>
-            <div className="flex gap-2 flex-wrap">
-              <Badge variant="outline">Standard</Badge>
-            </div>
-          </div>
-        </div>
-
         {/* Action Buttons */}
-        <div className="flex gap-3 pt-4">
+        <div className="">
           <Link href="/list-item">
-            <Button variant="outline" className="flex-1 border-2 border-primary text-primary hover:bg-primary/5 py-3 font-semibold rounded-lg">
+            <Button variant="outline" className="h-12 w-full flex-1 border-2 border-primary text-primary hover:bg-primary/5 py-3 font-semibold rounded-lg">
               Edit Details
             </Button>
           </Link>
           <Link href="/dashboard">
-            <Button className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-3 font-semibold rounded-lg">
+            <Button className="h-12 w-full mt-5 flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-3 font-semibold rounded-lg">
               Submit Listing
             </Button>
           </Link>

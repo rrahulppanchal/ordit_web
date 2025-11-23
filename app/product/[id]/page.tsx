@@ -1,9 +1,10 @@
 'use client'
 
-import { ChevronLeft, Share2, Heart, MessageCircle, ChevronRight } from 'lucide-react'
+import { ChevronLeft, Share2, Heart, MessageCircle, ChevronRight, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { PageHeader } from '@/components/page-header'
 
 export default function ProductDetailPage() {
   const router = useRouter()
@@ -26,19 +27,22 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 flex items-center justify-between">
-        <Link href="/browse" className="text-foreground">
-          <ChevronLeft className="w-6 h-6" />
-        </Link>
-        <div className="flex gap-2">
-          <button className="text-foreground">
-            <Share2 className="w-5 h-5" />
-          </button>
-          <button onClick={() => setIsLiked(!isLiked)} className={isLiked ? 'text-primary' : 'text-foreground'}>
-            <Heart className="w-5 h-5" fill={isLiked ? 'currentColor' : 'none'} />
-          </button>
-        </div>
-      </div>
+      <PageHeader
+          backButton={{
+            href: '/seller/1'
+          }}
+          title="Handcrafted Leather Wallet"
+          subtitle="$75.00"
+          rightActions={[
+            {
+              type: 'notification',
+              icon: ShoppingCart,
+              href: '/cart',
+              badge: true
+            }
+          ]}
+          sticky
+        />
 
       <main className="space-y-4">
         {/* Image Carousel */}
@@ -62,28 +66,6 @@ export default function ProductDetailPage() {
           <div>
             <h1 className="text-foreground text-2xl font-bold mb-2">Handcrafted Leather Wallet</h1>
             <p className="text-primary font-bold text-2xl">$75.00</p>
-          </div>
-
-          {/* Rating */}
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1">
-              {[...Array(5)].map((_, i) => (
-                <span key={i} className="text-primary text-sm">★</span>
-              ))}
-            </div>
-            <span className="text-muted-foreground text-sm">(124 reviews)</span>
-          </div>
-
-          {/* Options */}
-          <div className="space-y-3">
-            <div className="flex gap-2">
-              <button className="flex-1 border-2 border-border rounded-lg py-2 px-3 text-foreground font-medium hover:border-secondary">
-                Size
-              </button>
-              <button className="flex-1 border-2 border-border rounded-lg py-2 px-3 text-foreground font-medium hover:border-secondary">
-                Color
-              </button>
-            </div>
           </div>
 
           {/* Description */}

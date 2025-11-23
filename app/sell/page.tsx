@@ -210,10 +210,6 @@ export default function SellPage() {
         <div className="px-4 space-y-4">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-bold text-foreground">Your Listings ({products.length})</h2>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <TrendingUp className="w-4 h-4" />
-              <span>Manage</span>
-            </div>
           </div>
 
           {products.length === 0 ? (
@@ -309,23 +305,7 @@ export default function SellPage() {
                       {getStatusBadge(product.status)}
                     </div>
 
-                    <div className="flex items-center justify-between mt-3">
-                      <div>
-                        <p className="text-lg font-bold text-primary">${product.price.toFixed(2)}</p>
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>{product.views}</span>
-                        </div>
-                        {product.sales > 0 && (
-                          <div className="flex items-center gap-1">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            <span>{product.sales}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    
                   </div>
                 </div>
               </div>

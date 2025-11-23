@@ -1,6 +1,9 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import { HelpCircle, Mail, User, MessageSquare, Paperclip, X, Send, Loader2, FileText, Image, File } from 'lucide-react'
 import Link from 'next/link'
 import { PageHeader } from '@/components/page-header'
@@ -9,6 +12,14 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BottomNav } from '@/components/bottom-nav'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 
 interface Attachment {
   id: string
@@ -18,22 +29,32 @@ interface Attachment {
   type: string
 }
 
+const helpFormSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be less than 100 characters'),
+  email: z.string().email('Invalid email address'),
+  category: z.string().optional(),
+  subject: z.string().max(200, 'Subject must be less than 200 characters').optional(),
+  message: z.string().min(10, 'Message must be at least 10 characters').max(2000, 'Message must be less than 2000 characters'),
+})
+
+type HelpFormValues = z.infer<typeof helpFormSchema>
+
 export default function HelpPage() {
-  const [isLoading, setIsLoading] = useState(false)
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    category: '',
-    message: ''
+
+  const form = useForm<HelpFormValues>({
+    resolver: zodResolver(helpFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      subject: '',
+      category: '',
+      message: ''
+    },
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
+  const isLoading = form.formState.isSubmitting
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -78,39 +99,22 @@ export default function HelpPage() {
     return File
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!formData.name || !formData.email || !formData.message) {
-      alert('Please fill in all required fields')
-      return
-    }
-
-    setIsLoading(true)
-    
+  const onSubmit = async (data: HelpFormValues) => {
     // Simulate API call with FormData
     const formDataToSend = new FormData()
-    formDataToSend.append('name', formData.name)
-    formDataToSend.append('email', formData.email)
-    formDataToSend.append('subject', formData.subject)
-    formDataToSend.append('category', formData.category)
-    formDataToSend.append('message', formData.message)
+    formDataToSend.append('name', data.name)
+    formDataToSend.append('email', data.email)
+    formDataToSend.append('subject', data.subject || '')
+    formDataToSend.append('category', data.category || '')
+    formDataToSend.append('message', data.message)
     
     attachments.forEach((att, index) => {
       formDataToSend.append(`attachment_${index}`, att.file)
     })
 
     setTimeout(() => {
-      setIsLoading(false)
-      console.log('Contact form submitted:', formData, attachments)
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        category: '',
-        message: ''
-      })
+      console.log('Contact form submitted:', data, attachments)
+      form.reset()
       setAttachments([])
       alert('Thank you! Your message has been sent. We\'ll get back to you soon.')
     }, 1500)
@@ -148,100 +152,135 @@ export default function HelpPage() {
         </div>
 
         {/* Contact Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <User className="w-4 h-4 text-primary" />
-              Your Name <span className="text-primary">*</span>
-            </label>
-            <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                placeholder="John Doe"
-                className="h-12 pl-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              />
-            </div>
-          </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            {/* Name */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <User className="w-4 h-4 text-primary" />
+                    Your Name <span className="text-primary">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        type="text"
+                        placeholder="John Doe"
+                        className="h-12 pl-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Email */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Mail className="w-4 h-4 text-primary" />
-              Email Address <span className="text-primary">*</span>
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                placeholder="your.email@example.com"
-                className="h-12 pl-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              />
-            </div>
-          </div>
+            {/* Email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Mail className="w-4 h-4 text-primary" />
+                    Email Address <span className="text-primary">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        type="email"
+                        placeholder="your.email@example.com"
+                        className="h-12 pl-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Category */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <FileText className="w-4 h-4 text-primary" />
-              Category
-            </label>
-            <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
-              <SelectTrigger className="h-12 py-5.5 w-full bg-card text-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="general">General Inquiry</SelectItem>
-                <SelectItem value="technical">Technical Support</SelectItem>
-                <SelectItem value="billing">Billing & Payments</SelectItem>
-                <SelectItem value="account">Account Issues</SelectItem>
-                <SelectItem value="orders">Order Related</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Category */}
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <FileText className="w-4 h-4 text-primary" />
+                    Category
+                  </FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="h-12 py-5.5 w-full bg-card text-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="general">General Inquiry</SelectItem>
+                      <SelectItem value="technical">Technical Support</SelectItem>
+                      <SelectItem value="billing">Billing & Payments</SelectItem>
+                      <SelectItem value="account">Account Issues</SelectItem>
+                      <SelectItem value="orders">Order Related</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Subject */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <MessageSquare className="w-4 h-4 text-primary" />
-              Subject
-            </label>
-            <Input
-              type="text"
+            {/* Subject */}
+            <FormField
+              control={form.control}
               name="subject"
-              value={formData.subject}
-              onChange={handleInputChange}
-              placeholder="Brief description of your issue"
-              className="h-12 pl-4 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <MessageSquare className="w-4 h-4 text-primary" />
+                    Subject
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Brief description of your issue"
+                      className="h-12 pl-4 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          {/* Message */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <MessageSquare className="w-4 h-4 text-primary" />
-              Message <span className="text-primary">*</span>
-            </label>
-            <Textarea
+            {/* Message */}
+            <FormField
+              control={form.control}
               name="message"
-              value={formData.message}
-              onChange={handleInputChange}
-              required
-              rows={6}
-              placeholder="Please describe your issue or question in detail..."
-              className="bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <MessageSquare className="w-4 h-4 text-primary" />
+                    Message <span className="text-primary">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      rows={6}
+                      placeholder="Please describe your issue or question in detail..."
+                      className="bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
           {/* Attachments */}
           <div className="space-y-2">
@@ -304,25 +343,26 @@ export default function HelpPage() {
             )}
           </div>
 
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            disabled={isLoading || !formData.name || !formData.email || !formData.message}
-            className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-primary-foreground py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 font-semibold"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Sending...</span>
-              </>
-            ) : (
-              <>
-                <Send className="w-5 h-5" />
-                <span>Send Message</span>
-              </>
-            )}
-          </Button>
-        </form>
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-primary-foreground py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 font-semibold"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Sending...</span>
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5" />
+                  <span>Send Message</span>
+                </>
+              )}
+            </Button>
+          </form>
+        </Form>
 
         {/* FAQ Section */}
         <div className="bg-card rounded-xl p-6 border border-border">

@@ -1,36 +1,55 @@
 'use client'
 
-import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import { User, Mail, Phone, MapPin, Save, Loader2 } from 'lucide-react'
-import Link from 'next/link'
 import { PageHeader } from '@/components/page-header'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { BottomNav } from '@/components/bottom-nav'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Textarea } from '@/components/ui/textarea'
+
+const editProfileSchema = z.object({
+  firstName: z.string().min(2, 'First name must be at least 2 characters').max(50, 'First name must be less than 50 characters'),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters').max(50, 'Last name must be less than 50 characters'),
+  email: z.string().email('Invalid email address'),
+  phone: z.string()
+    .min(10, 'Phone number must be at least 10 characters')
+    .regex(/^[\d\s()+-]+$/, 'Invalid phone number format'),
+  location: z.string().min(3, 'Location must be at least 3 characters').max(200, 'Location must be less than 200 characters'),
+  bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
+})
+
+type EditProfileFormValues = z.infer<typeof editProfileSchema>
 
 export default function EditProfilePage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    firstName: 'Jane',
-    lastName: 'Doe',
-    email: 'jane.doe@example.com',
-    phone: '+1 (555) 123-4567',
-    location: 'San Francisco, CA',
-    bio: 'Artisanal crafts and unique finds for your home.'
+  const form = useForm<EditProfileFormValues>({
+    resolver: zodResolver(editProfileSchema),
+    defaultValues: {
+      firstName: 'Jane',
+      lastName: 'Doe',
+      email: 'jane.doe@example.com',
+      phone: '+1 (555) 123-4567',
+      location: 'San Francisco, CA',
+      bio: 'Artisanal crafts and unique finds for your home.',
+    },
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
+  const isLoading = form.formState.isSubmitting
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+  const onSubmit = async (data: EditProfileFormValues) => {
     // Simulate API call
     setTimeout(() => {
-      setIsLoading(false)
-      console.log('Profile updated:', formData)
+      console.log('Profile updated:', data)
     }, 1000)
   }
 
@@ -63,123 +82,167 @@ export default function EditProfilePage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* First Name */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <User className="w-4 h-4 text-primary" />
-              First Name
-            </label>
-            <Input
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            {/* First Name */}
+            <FormField
+              control={form.control}
               name="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              className="h-12 pl-4 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <User className="w-4 h-4 text-primary" />
+                    First Name
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="h-12 pl-4 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          {/* Last Name */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <User className="w-4 h-4 text-primary" />
-              Last Name
-            </label>
-            <Input
+            {/* Last Name */}
+            <FormField
+              control={form.control}
               name="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              className="h-12 pl-4 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <User className="w-4 h-4 text-primary" />
+                    Last Name
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="h-12 pl-4 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          {/* Email */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Mail className="w-4 h-4 text-primary" />
-              Email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="h-12 pl-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              />
-            </div>
-          </div>
+            {/* Email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Mail className="w-4 h-4 text-primary" />
+                    Email
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        type="email"
+                        className="h-12 pl-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Phone */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Phone className="w-4 h-4 text-primary" />
-              Phone Number
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                className="h-12 pl-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              />
-            </div>
-          </div>
+            {/* Phone */}
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Phone className="w-4 h-4 text-primary" />
+                    Phone Number
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        type="tel"
+                        className="h-12 pl-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Location */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <MapPin className="w-4 h-4 text-primary" />
-              Location
-            </label>
-            <div className="relative">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                className="h-12 pl-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              />
-            </div>
-          </div>
+            {/* Location */}
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <MapPin className="w-4 h-4 text-primary" />
+                    Location
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        className="h-12 pl-12 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Bio */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <User className="w-4 h-4 text-primary" />
-              Bio
-            </label>
-            <textarea
+            {/* Bio */}
+            <FormField
+              control={form.control}
               name="bio"
-              value={formData.bio}
-              onChange={handleInputChange}
-              rows={4}
-              className="w-full pl-4 pt-3 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
-              placeholder="Tell us about yourself..."
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <User className="w-4 h-4 text-primary" />
+                    Bio
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      rows={4}
+                      className="w-full pl-4 pt-3 bg-card text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+                      placeholder="Tell us about yourself..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          {/* Save Button */}
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-primary-foreground py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 font-semibold"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Saving...</span>
-              </>
-            ) : (
-              <>
-                <Save className="w-5 h-5" />
-                <span>Save Changes</span>
-              </>
-            )}
-          </Button>
-        </form>
+            {/* Save Button */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-primary-foreground py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 font-semibold"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  <span>Save Changes</span>
+                </>
+              )}
+            </Button>
+          </form>
+        </Form>
       </div>
 
       <BottomNav />

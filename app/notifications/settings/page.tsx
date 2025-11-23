@@ -44,7 +44,7 @@ export default function NotificationSettingsPage() {
       </div>
 
       {/* Settings Content */}
-      <div className="px-4 py-6 space-y-6">
+      <div className="px-4 py-6 space-y-6 mb-20">
         {/* Notification Types */}
         <div>
           <h2 className="text-lg font-semibold text-foreground mb-4">Notification Types</h2>

@@ -1,21 +1,44 @@
 'use client'
 
-import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import Link from 'next/link'
-import { Phone, Loader2, ArrowRight, Mail, Smartphone, Apple } from 'lucide-react'
+import { Phone, Loader2, ArrowRight, Mail } from 'lucide-react'
 import { OrditLogo } from '@/components/ordit-logo'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+
+const sendOtpSchema = z.object({
+  phoneNumber: z.string()
+    .min(10, 'Phone number must be at least 10 digits')
+    .regex(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits'),
+})
+
+type SendOtpFormValues = z.infer<typeof sendOtpSchema>
 
 export default function SendOtpPage() {
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const form = useForm<SendOtpFormValues>({
+    resolver: zodResolver(sendOtpSchema),
+    defaultValues: {
+      phoneNumber: '',
+    },
+  })
 
-  const handleSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+  const isLoading = form.formState.isSubmitting
+
+  const onSubmit = async (data: SendOtpFormValues) => {
     // Simulate API call
     setTimeout(() => {
-      setIsLoading(false)
-      console.log('OTP sent to:', phoneNumber)
+      console.log('OTP sent to:', data.phoneNumber)
     }, 1000)
   }
 
@@ -38,47 +61,56 @@ export default function SendOtpPage() {
         </div>
 
         {/* Form Section */}
-        <form onSubmit={handleSendOtp} className="space-y-6 mb-8">
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-foreground">
-              Phone Number
-            </label>
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <Phone className="w-5 h-5" />
-              </div>
-              <div className="absolute left-12 top-1/2 -translate-y-1/2 text-muted-foreground">
-                +91
-              </div>
-              <input
-                type="tel"
-                placeholder="9876543210"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                required
-                className="w-full pl-19 pr-4 py-3.5 border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-card text-foreground placeholder:text-muted-foreground transition-all"
-              />
-            </div>
-          </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mb-8">
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="block text-sm font-semibold text-foreground">
+                    Phone Number
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+                        <Phone className="w-5 h-5" />
+                      </div>
+                      <div className="absolute left-12 top-1/2 -translate-y-1/2 text-muted-foreground">
+                        +91
+                      </div>
+                      <Input
+                        type="tel"
+                        placeholder="9876543210"
+                        className="w-full pl-19 h-12 pr-4 py-3.5 border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-card text-foreground placeholder:text-muted-foreground transition-all"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <button
-            type="submit"
-            disabled={isLoading || !phoneNumber}
-            className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed text-primary-foreground font-semibold py-4 px-4 rounded-xl transition-all shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center gap-2 group"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Sending...</span>
-              </>
-            ) : (
-              <>
-                <span>Send OTP</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </>
-            )}
-          </button>
-        </form>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-12 bg-primary hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed text-primary-foreground font-semibold py-4 px-4 rounded-xl transition-all shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center gap-2 group"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Sending...</span>
+                </>
+              ) : (
+                <>
+                  <span>Send OTP</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </Button>
+          </form>
+        </Form>
 
         {/* Divider */}
         <div className="flex items-center gap-4 mb-8">
