@@ -56,20 +56,18 @@ export default function NotificationSettingsPage() {
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">Messages</h3>
-                  <p className="text-xs text-muted-foreground">Get notified about new messages</p>
+                  <h3 className="font-semibold text-foreground">Order's Messages</h3>
+                  <p className="text-xs text-muted-foreground">Get notified about order remarks</p>
                 </div>
               </div>
               <button
                 onClick={() => handleToggle('messages')}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  settings.messages ? 'bg-primary' : 'bg-muted'
-                }`}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.messages ? 'bg-primary' : 'bg-muted'
+                  }`}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    settings.messages ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.messages ? 'translate-x-6' : 'translate-x-1'
+                    }`}
                 />
               </button>
             </div>
@@ -87,92 +85,19 @@ export default function NotificationSettingsPage() {
               </div>
               <button
                 onClick={() => handleToggle('orders')}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  settings.orders ? 'bg-primary' : 'bg-muted'
-                }`}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.orders ? 'bg-primary' : 'bg-muted'
+                  }`}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    settings.orders ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.orders ? 'translate-x-6' : 'translate-x-1'
+                    }`}
                 />
               </button>
             </div>
 
-            {/* Promotions */}
-            <div className="bg-card border border-border rounded-lg p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
-                  <Tag className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground">Promotions</h3>
-                  <p className="text-xs text-muted-foreground">
-                    Get notified about special offers
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => handleToggle('promotions')}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  settings.promotions ? 'bg-primary' : 'bg-muted'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    settings.promotions ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
           </div>
         </div>
 
-        {/* Notification Delivery */}
-        <div>
-          <h2 className="text-lg font-semibold text-foreground mb-4">Notification Delivery</h2>
-          <div className="space-y-3">
-            {/* Sound */}
-            <div className="bg-card border border-border rounded-lg p-4 flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-foreground">Sound</h3>
-                <p className="text-xs text-muted-foreground">Play sound for notifications</p>
-              </div>
-              <button
-                onClick={() => handleToggle('sound')}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  settings.sound ? 'bg-primary' : 'bg-muted'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    settings.sound ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Vibration */}
-            <div className="bg-card border border-border rounded-lg p-4 flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-foreground">Vibration</h3>
-                <p className="text-xs text-muted-foreground">Vibrate for notifications</p>
-              </div>
-              <button
-                onClick={() => handleToggle('vibration')}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  settings.vibration ? 'bg-primary' : 'bg-muted'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    settings.vibration ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* Do Not Disturb */}
         <div>
@@ -185,14 +110,12 @@ export default function NotificationSettingsPage() {
               </div>
               <button
                 onClick={() => handleToggle('doNotDisturb')}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  settings.doNotDisturb ? 'bg-primary' : 'bg-muted'
-                }`}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.doNotDisturb ? 'bg-primary' : 'bg-muted'
+                  }`}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    settings.doNotDisturb ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.doNotDisturb ? 'translate-x-6' : 'translate-x-1'
+                    }`}
                 />
               </button>
             </div>

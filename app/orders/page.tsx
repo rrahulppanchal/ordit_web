@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Package, ShoppingBag, ArrowRight, Filter, Search } from 'lucide-react'
+import { Package, ShoppingBag, ArrowRight, Filter, Search, MapPin, Store } from 'lucide-react'
 import { BottomNav } from '@/components/bottom-nav'
 import { PageHeader } from '@/components/page-header'
 import { Button } from '@/components/ui/button'
@@ -19,7 +19,9 @@ export default function OrdersPage() {
       amount: 150.0,
       status: 'Delivered',
       statusColor: 'bg-emerald-100 text-emerald-700',
-      items: 2
+      items: 2,
+      shopName: "The Artisan's Corner",
+      location: 'Sector 1, Noida, Uttar Pradesh'
     },
     {
       id: '123457',
@@ -27,7 +29,9 @@ export default function OrdersPage() {
       amount: 75.5,
       status: 'Pending',
       statusColor: 'bg-orange-100 text-primary',
-      items: 1
+      items: 1,
+      shopName: 'Cozy Corner Cafe',
+      location: 'Sector 18, Noida, Uttar Pradesh'
     }
   ]
 
@@ -38,7 +42,8 @@ export default function OrdersPage() {
       amount: 220.0,
       status: 'Shipped',
       statusColor: 'bg-blue-100 text-blue-700',
-      items: 1
+      items: 1,
+      buyerLocation: 'Sector 2, Noida, Uttar Pradesh'
     },
     {
       id: 'ORD-788',
@@ -46,7 +51,8 @@ export default function OrdersPage() {
       amount: 95.0,
       status: 'Delivered',
       statusColor: 'bg-emerald-100 text-emerald-700',
-      items: 3
+      items: 3,
+      buyerLocation: 'Sector 15, Noida, Uttar Pradesh'
     }
   ]
 
@@ -121,6 +127,30 @@ export default function OrdersPage() {
                   </div>
                   <p className="text-sm text-muted-foreground">{order.date}</p>
                   <p className="text-xs text-muted-foreground mt-1">{order.items} item{order.items > 1 ? 's' : ''}</p>
+                  
+                  {/* Shop Name and Location for Buying Orders */}
+                  {activeTab === 'buying' && 'shopName' in order && (
+                    <div className="mt-3 space-y-1.5 pt-3 border-t border-border/50">
+                      <div className="flex items-center gap-2">
+                        <Store className="w-3.5 h-3.5 text-primary" />
+                        <p className="text-sm font-semibold text-foreground">{order.shopName}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground">{order.location}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Buyer Location for Selling Orders */}
+                  {activeTab === 'selling' && 'buyerLocation' in order && (
+                    <div className="mt-3 pt-3 border-t border-border/50">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground">{order.buyerLocation}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className={`px-3 py-1 rounded-full text-sm font-medium ${order.statusColor}`}>
                   {order.status}

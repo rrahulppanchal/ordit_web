@@ -16,14 +16,14 @@ export default function ProfilePage() {
     {
       icon: Store,
       label: 'Manage Business Profile',
-      href: '/seller/1',
+      href: '/sell',
       description: 'Update your business information'
     },
     {
-      icon: Lock,
-      label: 'Change Password',
-      href: '/profile/password',
-      description: 'Update your account password'
+      icon: MapPin,
+      label: 'Manage Addresses',
+      href: '/profile/addresses',
+      description: 'Add and update your addresses'
     },
     {
       icon: Settings,
@@ -105,7 +105,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-3">
+          {/* <div className="grid grid-cols-3 gap-3">
             {quickStats.map((stat, idx) => {
               const IconComponent = stat.icon
               return (
@@ -118,7 +118,7 @@ export default function ProfilePage() {
                 </div>
               )
             })}
-          </div>
+          </div> */}
 
           {/* Menu Items */}
           <div className="space-y-2">

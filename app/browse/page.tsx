@@ -171,12 +171,7 @@ export default function BrowsePage() {
         ))}
       </div>
 
-      {/* Floating Action Button */}
-      <Link href="/list-item" className="fixed bottom-28 right-4">
-        <Button size="lg" className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg flex items-center justify-center">
-          <Plus className="w-6 h-6" />
-        </Button>
-      </Link>
+     
 
       <BottomNav />
     </main>

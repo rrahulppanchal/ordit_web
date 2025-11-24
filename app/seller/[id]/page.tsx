@@ -4,7 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { 
   Store, MessageCircle, Heart, ShoppingCart, Plus, Minus, Trash2, 
-  X, CheckCircle2, Package, ArrowRight, Star, Users
+  X, CheckCircle2, Package, ArrowRight, Star, Users,
+  MapPin,
+  PhoneOutgoing
 } from 'lucide-react'
 import { PageHeader } from '@/components/page-header'
 import { Button } from '@/components/ui/button'
@@ -120,8 +122,8 @@ export default function SellerStorePage() {
           backButton={{
             href: '/browse'
           }}
-          title={sellerInfo.name}
-          subtitle={`${sellerInfo.products} products • ${sellerInfo.followers} followers`}
+          title={`Agarwal Wholesalers`}
+          subtitle={`Sector 1, Noida, Uttar Pradesh`}
           rightActions={[
             {
               type: 'notification',
@@ -148,47 +150,25 @@ export default function SellerStorePage() {
                 </div>
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-foreground mb-1">{sellerInfo.name}</h2>
+                <h2 className="text-xl font-bold text-foreground mb-1">{`Agarwal Wholesalers`}</h2>
                 <p className="text-sm text-muted-foreground mb-2">{sellerInfo.description}</p>
                 <div className="flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                    <span className="font-semibold text-foreground">{sellerInfo.rating}</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Users className="w-4 h-4" />
-                    <span>{sellerInfo.followers}</span>
+                    <MapPin className="w-4 h-4 text-primary-500 fill-primary-500" />
+                    <span className="font-semibold text-foreground">{`Sector 1, Noida, Uttar Pradesh`}</span>
                   </div>
                 </div>
               </div>
             </div>
             <div className="flex gap-3">
-              <Button
-                onClick={() => setIsFollowing(!isFollowing)}
-                variant={isFollowing ? "default" : "outline"}
-                className={`flex-1 ${isFollowing ? 'bg-primary text-primary-foreground' : ''}`}
-              >
-                {isFollowing ? (
-                  <>
-                    <CheckCircle2 className="w-4 h-4 mr-2" />
-                    Following
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Follow
-                  </>
-                )}
-              </Button>
               <Link href="/messages" className="flex-1">
                 <Button variant="outline" className="w-full">
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Contact
+                  <PhoneOutgoing className="w-4 h-4 mr-2" />
+                  Call
                 </Button>
               </Link>
             </div>
           </div>
-
           {/* Category Tabs */}
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {categories.map(cat => (

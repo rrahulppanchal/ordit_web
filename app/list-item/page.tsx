@@ -32,6 +32,15 @@ const listItemSchema = z.object({
       const num = parseFloat(val)
       return !isNaN(num) && num > 0
     }, 'Price must be a positive number'),
+  quantity: z.string()
+    .min(1, 'Quantity is required')
+    .refine((val) => {
+      const num = parseFloat(val)
+      return !isNaN(num) && num > 0
+    }, 'Quantity must be a positive number'),
+  unit: z.enum(['pcs', 'kg', 'g', 'litre', 'ml', 'pack'], {
+    required_error: 'Select a unit'
+  }),
 })
 
 type ListItemFormValues = z.infer<typeof listItemSchema>
@@ -47,6 +56,8 @@ export default function ListItemPage() {
       description: '',
       category: undefined,
       price: '',
+      quantity: '',
+      unit: 'pcs',
     },
   })
 
@@ -212,6 +223,62 @@ export default function ListItemPage() {
               </FormItem>
             )}
           />
+
+          {/* Quantity & Unit */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Package className="w-4 h-4 text-primary" />
+                    Available Quantity
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="10"
+                      className="bg-card h-12 text-foreground placeholder:text-muted-foreground border-2 border-border rounded-xl py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="unit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Package className="w-4 h-4 text-primary" />
+                    Unit
+                  </FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="w-full bg-card text-foreground border-2 border-border rounded-xl py-5.5 focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                        <SelectValue placeholder="Select unit" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="pcs">Pieces (pcs)</SelectItem>
+                      <SelectItem value="kg">Kilograms (kg)</SelectItem>
+                      <SelectItem value="g">Grams (g)</SelectItem>
+                      <SelectItem value="litre">Litres (L)</SelectItem>
+                      <SelectItem value="ml">Millilitres (ml)</SelectItem>
+                      <SelectItem value="pack">Pack</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           {/* List Button */}
           <div className="pt-4">
